@@ -267,3 +267,40 @@ my_tree = build_tree(training_data)
 
 print_tree(my_tree)
 
+
+def classify(row, node):
+    # See the 'rules of recursion aboive.
+    
+    #Now we are at the leaf node
+    if isinstance(node, Leaf):
+        return node.predictions
+    
+    # Decide wheter to follow the true-branch or the false-branch.
+    # Compare the feature/value stored in the node, to teh example we're considering.
+    if node.question.match(row):
+        return classify(row, node.true_branch)
+    else:
+        return classify(row, node.false_branch)
+
+
+def print_leaf(counts):
+    # A nicer way to print the prediction at a leaf.
+    total = sum(counts.values()) * 1.0
+    probs = {}
+    for lbl in counts.keys():
+        probs[lbl] = str(int(counts[lbl] / total * 100)) + "%"
+    return probs
+
+
+    # Evaluate
+testing_data = [
+    ['Green', 3, 'Apple'],
+    ['Yellow', 4, 'Apple'],
+    ['Red', 2, 'Grape'],
+    ['Red', 1, 'Grape'],
+    ['Yellow', 3, 'Lemon'],
+]
+
+
+for row in testing_data:
+    print("Actual: %s. Predicted: %s" % (row[-1], print_leaf(classify(row, my_tree))))
